@@ -1,3 +1,9 @@
+// let plopSound;
+
+// function preload() {
+//     plopSound = loadSound('plop.mp3');
+// }
+
 let ripples = []; //declare ripples!
 
 function setup() {
@@ -24,8 +30,11 @@ function draw() {
 }
 
 function mousePressed() {
-    console.log("Mouse clicked at:", mouseX, mouseY); //tester to make sure mousePressed is running
+    //console.log("Mouse clicked at:", mouseX, mouseY); //tester to make sure mousePressed is running
     
+    // if(plopSound) {
+    //     plopSound.play();
+
     let r = new Ripple(mouseX, mouseY);
     console.log("Created ripple:", r); //another test!
     ripples.push(r);
@@ -52,7 +61,7 @@ class Ripple {
     display() {
         noFill();
         stroke(255, this.alpha);
-        //strokeWeight(2);
+        strokeWeight(6);
         ellipse(this.x, this.y, this.radius * 2);
     }
 
