@@ -49,23 +49,31 @@ class Ripple {
         this.y = y;
         this.radius = 0; //start at 0 bc they expand
         this.alpha = 255; //this is for opacity - it'll go down as it expands
-
+        this.maxRadius = random(150, 900); //adding in a feature so that each ripple end size will be random
     }
 
     expand() {
-        this.radius += 8;
-        this.alpha -= 10;
+        this.radius += 15;
+        //this.alpha -= 10;
+        this.alpha = map(this.radius, 0, this.maxRadius, 255, 0);
 
     }
 
     display() {
+        // noFill();
+        // stroke(255, this.alpha);
+        // strokeWeight(6);
+        // ellipse(this.x, this.y, this.radius * 2);
+    
         noFill();
-        stroke(255, this.alpha);
-        strokeWeight(6);
+        let dynamicStroke = map(this.radius, 0, this.maxRadius, 6, 1); //lines get thinner as they expand
+        strokeWeight(dynamicStroke);
+        stroke(100, 150, 255, this.alpha); 
         ellipse(this.x, this.y, this.radius * 2);
+    
     }
 
     isFaded() {
-        return this.alpha <= 0;
+        return this.alpha <= 0 ;
     }
 }
