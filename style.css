@@ -11,17 +11,24 @@ body {
     display: inline-block;
 }
 
-#icon {
+#orb {
     width: 40px;
     height: 40px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
 }
 
 .tooltip {
     visibility: hidden;
     width: 180px;
-    background-color: rgba (0,0,0,0.75);
-    color: #fff;
+    background-color: white;
+    color: #001f54;
     text-align: center;
     padding: 8px;
     border-radius: 6px;
@@ -31,6 +38,7 @@ body {
     right: 0;
     z-index: 1;
     font-size: 14px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
 .help-icon:hover .tooltip {
