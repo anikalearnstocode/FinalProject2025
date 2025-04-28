@@ -16,7 +16,8 @@ function setup() {
 }
 
 function draw() {
-    background(135, 206, 235, 50); //last value is for slight transparency
+    //background(135, 206, 235, 50); //last value is for slight transparency
+    drawGradientBackground();
 
     for (let i = ripples.length - 1; i>= 0; i--) {
         if (ripples[i]) {
@@ -32,15 +33,24 @@ function draw() {
     }
 }
 
-function mousePressed() {
-    //console.log("Mouse clicked at:", mouseX, mouseY); //tester to make sure mousePressed is running
-    
-    // if(plopSound) {
-    //     plopSound.play();
+function drawGradientBackground() {
+    let color1 = color(207, 237, 255);
+    let color2 = color(14, 83, 105);
 
-    // let r = new Ripple(mouseX, mouseY);
-    // console.log("Created ripple:", r); //another test!
-    // ripples.push(r);
+    let amt = map(sin(frameCount * 0.006), -1, 1, 0, 1);
+    let blendedTop = lerpColor(color1, color2, amt);
+    let blendedBottom = lerpColor(color2, color1, amt);
+
+    for (let y = 0; y < innerHeight; y++) {
+        let inter = map(y, 0, height, 0, 1);
+        let c = lerpColor(blendedTop, blendedBottom, inter);
+        stroke(c);
+        line(0, y, width, y);
+    }
+}
+
+
+function mousePressed() {
 
     if(plopSound && plopSound.isLoaded()) {
         plopSound.play();
@@ -78,7 +88,7 @@ class Ripple {
         noFill();
         let dynamicStroke = map(this.radius, 0, this.maxRadius, 6, 1); //lines get thinner as they expand
         strokeWeight(dynamicStroke);
-        stroke(100, 150, 255, this.alpha); 
+        stroke(204, 223, 230, this.alpha); 
         ellipse(this.x, this.y, this.radius * 2);
     
     }
