@@ -2,6 +2,9 @@ let plopSound;
 
 function preload() {
     plopSound = loadSound('plop.mp3');
+    plopSound.onError(() => {
+        console.log("Failed to load sound.");
+      });
 }
 
 let ripples = []; //declare ripples!
