@@ -3,3 +3,36 @@ body {
     overflow: hidden;
     background-color: #bdd4de;
 }
+
+.help-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: inline-block;
+}
+
+#icon {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.tooltip {
+    visibility: hidden;
+    width: 180px;
+    background-color: rgba (0,0,0,0.75);
+    color: #fff;
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+
+    position: absolute;
+    bottom: 50px;
+    right: 0;
+    z-index: 1;
+    font-size: 14px;
+}
+
+.help-icon:hover .tooltip {
+    visibility: visible;
+}

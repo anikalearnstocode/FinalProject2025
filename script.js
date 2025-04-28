@@ -1,8 +1,8 @@
-// let plopSound;
+let plopSound;
 
-// function preload() {
-//     plopSound = loadSound('plop.mp3');
-// }
+function preload() {
+    plopSound = loadSound('plop.mp3');
+}
 
 let ripples = []; //declare ripples!
 
@@ -13,7 +13,7 @@ function setup() {
 }
 
 function draw() {
-    background(135, 206, 235, 20); //last value is for slight transparency
+    background(135, 206, 235, 50); //last value is for slight transparency
 
     for (let i = ripples.length - 1; i>= 0; i--) {
         if (ripples[i]) {
@@ -35,8 +35,15 @@ function mousePressed() {
     // if(plopSound) {
     //     plopSound.play();
 
+    // let r = new Ripple(mouseX, mouseY);
+    // console.log("Created ripple:", r); //another test!
+    // ripples.push(r);
+
+    if(plopSound && plopSound.isLoaded()) {
+        plopSound.play();
+    }
+
     let r = new Ripple(mouseX, mouseY);
-    console.log("Created ripple:", r); //another test!
     ripples.push(r);
 
 }
@@ -53,7 +60,7 @@ class Ripple {
     }
 
     expand() {
-        this.radius += 15;
+        this.radius += 12;
         //this.alpha -= 10;
         this.alpha = map(this.radius, 0, this.maxRadius, 255, 0);
 
