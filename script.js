@@ -1,16 +1,25 @@
+let fishImages = [];
+let lilyImages = [];
 let bgLayer;
-
 let particles = [];
-
 let plopSound;
-
 let rippleRings = [];
+let fishArray = [];
+let lilyPads = [];
+
 
 function preload() {
+    fishImages.push(loadImage('fish1.png'));
+    fishImages.push(loadImage('fish2.png'));
+    fishImages.push(loadImage('fish3.png'));
+
+    lilyImages.push(loadImage('lily1.png'));
+    lilyImages.push(loadImage('lily2.png'));
+    lilyImages.push(loadImage('lily3.png'));
+    lilyImages.push(loadImage('lily4.png'));
+
     plopSound = loadSound('plop.mp3');
-    plopSound.onError(() => {
-        console.log("Failed to load sound.");
-      });
+    plopSound.onError(() => { console.log("Failed to load sound."); });
 }
 
 //let ripples = []; //declare ripples!
@@ -24,18 +33,37 @@ function setup() {
         particles.push(new Particle());
       }
 
+    let lilyCount = int(random(2, 5));
+    for (let i = 0; i < lilyCount; i++) {
+        lilyPads.push(new LilyPad());
+    }
+
+    let fishCount = int(random(3, 7));
+    for (let i = 0; i < fishCount; i++) {
+        fishArray.push(new Fish());
+    }
 }
 
 function draw() {
     drawGradientBackground();
-
     image(bgLayer, 0, 0, width, height);
 
+    // FISH (under ripples)
+    for (let i = fishArray.length - 1; i >= 0; i--) {
+        fishArray[i].move();
+        fishArray[i].display();
+        if (fishArray[i].isDone()) {
+        fishArray.splice(i, 1);
+        }
+    } 
+
+    // PARTICLES
     for (let p of particles) {
         p.move();
         p.display();
     }
 
+    // RIPPLE RINGS
     for (let i = rippleRings.length - 1; i >= 0; i--) {
         rippleRings[i].expand();
         rippleRings[i].display();
@@ -44,41 +72,25 @@ function draw() {
         }
     }
 
-    // for (let i = ripples.length - 1; i>= 0; i--) {
-    //     if (ripples[i]) {
-    //         ripples[i].expand();
-    //         ripples[i].display();
-        
+    // LILYPADS (above ripples)
+    for (let pad of lilyPads) {
+        pad.move();
+        pad.display();
+    }
 
-    //         //remove ripples when fully faded
-    //         if (ripples[i].isFaded()) {
-    //             ripples.splice(i, 1); 
-    //         }
-    //     }
-    // }
-
-    // for (let i = 0; i < ripples.length; i++) {
-    //     for (let j = i + 1; j < ripples.length; j++) {
-    //         let r1 = ripples[i];
-    //         let r2 = ripples[j];
-    
-    //         let d = dist(r1.x, r1.y, r2.x, r2.y);
-    //         if (d < r1.radius + r2.radius) {
-    //             // Collision happened, make them "blast" slightly
-    //             r1.radius += 5;
-    //             r2.radius += 5;
-    //             r1.alpha = min(r1.alpha + 30, 255);
-    //             r2.alpha = min(r2.alpha + 30, 255);
-    //         }
-    //     }
-    // }
+    // Occasionally spawn new fish
+    if (random(1) < 0.01 && fishArray.length < 6) {
+        fishArray.push(new Fish());
+    }
 }
+
+    
 
 function drawGradientBackground() {
     let color1 = color(207, 237, 255);
     let color2 = color(14, 83, 105);
 
-    let amt = map(sin(frameCount * 0.006), -1, 1, 0, 1);
+    let amt = map(sin(frameCount * 0.002), -1, 1, 0, 1);
     let blendedTop = lerpColor(color1, color2, amt);
     let blendedBottom = lerpColor(color2, color1, amt);
 
@@ -110,7 +122,7 @@ function mousePressed() {
 
 }
 
-//START OF CLASS
+//START OF RIPPLE CLASS
 class Ripple {
     //constructor
     constructor(x, y) {
@@ -207,3 +219,68 @@ class RippleRing {
         return this.alpha <= 0;
     }
 }
+
+class Fish {
+    constructor() {
+      this.img = random(fishImages);
+      this.x = random(width);
+      this.y = random(height);
+      this.size = random(100, 210);
+      this.alpha = 0;
+      this.fadeSpeed = random(0.5, 1);
+      this.vx = random(-0.3, 0.3);
+      this.vy = random(-0.3, 0.3);
+      this.lifetime = int(random(200, 400));
+      this.age = 0;
+    }
+  
+    move() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.age++;
+  
+      // Fade in then out
+      if (this.age < this.lifetime / 2) {
+        this.alpha = min(this.alpha + this.fadeSpeed, 255);
+      } else {
+        this.alpha = max(this.alpha - this.fadeSpeed, 0);
+      }
+    }
+  
+    display() {
+      tint(255, this.alpha);
+      image(this.img, this.x, this.y, this.size, this.size);
+      noTint();
+    }
+  
+    isDone() {
+      return this.alpha <= 0 && this.age >= this.lifetime;
+    }
+}
+
+class LilyPad {
+    constructor() {
+      this.img = random(lilyImages);
+      this.x = random(width);
+      this.y = random(height);
+      this.size = random(150, 380);
+      this.vx = random(-0.2, 0.2);
+      this.vy = random(-0.2, 0.2);
+    }
+  
+    move() {
+      this.x += this.vx;
+      this.y += this.vy;
+  
+      // wrap around edges
+      if (this.x < -this.size) this.x = width;
+      if (this.x > width + this.size) this.x = 0;
+      if (this.y < -this.size) this.y = height;
+      if (this.y > height + this.size) this.y = 0;
+    }
+  
+    display() {
+      image(this.img, this.x, this.y, this.size, this.size);
+    }
+}
+  
