@@ -19,8 +19,8 @@ function preload() {
     fishImages.push(loadImage('fish2.png'));
     fishImages.push(loadImage('fish3.png'));
 
-    lilyImages.push(loadImage('lily1.png'));
-    lilyImages.push(loadImage('lily2.png'));
+    // lilyImages.push(loadImage('lily1.png'));
+    // lilyImages.push(loadImage('lily2.png'));
     lilyImages.push(loadImage('lily3.png'));
     lilyImages.push(loadImage('lily4.png'));
 
