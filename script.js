@@ -290,7 +290,7 @@ class Fish {
         tint(255, this.alpha);
         imageMode(CENTER);
         image(this.img, 0, 0, this.size, this.size);
-        imageMode(CORNER); 
+        imageMode(CORNER);
         noTint();
         pop();
     }
@@ -353,7 +353,7 @@ class LilyPad {
         if (this.alpha < 255) {
             this.alpha += 1.5;
         }
-          
+
         // wrap around edges
         if (this.x < -this.size) this.x = width;
         if (this.x > width + this.size) this.x = 0;
