@@ -1,14 +1,20 @@
+
+// === GLOBAL VARIABLES ===
 let fishImages = [];
 let lilyImages = [];
 let bgLayer;
 let particles = [];
-let plopSound;
 let rippleRings = [];
 let fishArray = [];
 let lilyPads = [];
+let plopSound;
+let spaMusic;
+let started = false;
 
 
 function preload() {
+
+    // LOAD PICTURES
     fishImages.push(loadImage('fish1.png'));
     fishImages.push(loadImage('fish2.png'));
     fishImages.push(loadImage('fish3.png'));
@@ -18,22 +24,24 @@ function preload() {
     lilyImages.push(loadImage('lily3.png'));
     lilyImages.push(loadImage('lily4.png'));
 
+    // LOAD SOUNDS
     plopSound = loadSound('plop.mp3');
-    plopSound.onError(() => { console.log("Failed to load sound."); });
+    spaMusic = loadSound('spa.mp3');
 }
 
-//let ripples = []; //declare ripples!
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
     bgLayer = createGraphics(windowWidth, windowHeight);
     noFill();
 
+    document.getElementById("startButton").addEventListener("click", startExperience);
+
     for (let i = 0; i < 50; i++) {
         particles.push(new Particle());
-      }
+    }
 
-    let lilyCount = int(random(2, 5));
+    let lilyCount = int(random(3, 6));
     for (let i = 0; i < lilyCount; i++) {
         lilyPads.push(new LilyPad());
     }
@@ -44,6 +52,24 @@ function setup() {
     }
 }
 
+function startExperience() {
+    userStartAudio();
+    document.getElementById("overlay").style.display = "none";
+    started = true;
+
+    if (spaMusic && !spaMusic.isPlaying()) {
+        console.log("Trying to play spa music...");
+        spaMusic.setLoop(true);
+        spaMusic.setVolume(0.5);
+        spaMusic.play().then(() => {
+            console.log("Spa music started!");
+        }).catch(err => {
+            console.error("Music play failed:", err);
+        });
+    }
+}
+
+
 function draw() {
     drawGradientBackground();
     image(bgLayer, 0, 0, width, height);
@@ -53,9 +79,9 @@ function draw() {
         fishArray[i].move();
         fishArray[i].display();
         if (fishArray[i].isDone()) {
-        fishArray.splice(i, 1);
+            fishArray.splice(i, 1);
         }
-    } 
+    }
 
     // PARTICLES
     for (let p of particles) {
@@ -82,9 +108,11 @@ function draw() {
     if (random(1) < 0.01 && fishArray.length < 6) {
         fishArray.push(new Fish());
     }
+
+    if (!started) return;
 }
 
-    
+
 
 function drawGradientBackground() {
     let color1 = color(207, 237, 255);
@@ -109,28 +137,26 @@ function drawGradientBackground() {
 
 function mousePressed() {
 
-    if(plopSound && plopSound.isLoaded()) {
+    if (plopSound && plopSound.isLoaded()) {
         plopSound.play();
     }
-
-    // let r = new Ripple(mouseX, mouseY);
-    // ripples.push(r);
 
     for (let i = 0; i < 5; i++) {
         rippleRings.push(new RippleRing(mouseX, mouseY));
     }
 
+    if (!started) return;
+
 }
 
-//START OF RIPPLE CLASS
 class Ripple {
     //constructor
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.radius = 0; //start at 0 bc they expand
-        this.alpha = 255; //this is for opacity - it'll go down as it expands
-        this.maxRadius = random(150, 900); //adding in a feature so that each ripple end size will be random
+        this.radius = 0;
+        this.alpha = 255;
+        this.maxRadius = random(150, 900);
         this.history = [];
     }
 
@@ -145,24 +171,15 @@ class Ripple {
     display() {
         noFill();
         strokeWeight(1);
-
         for (let r of this.history) {
             let alphaValue = map(r, 0, this.maxRadius, 255, 0);
-            
-            //stroke(204, 223, 230, this.alpha); 
-            stroke(255,0,0, this.alpha); 
+            stroke(255, 0, 0, this.alpha);
             ellipse(this.x, this.y, this.radius * 2);
         }
-    
-        // let dynamicStroke = map(this.radius, 0, this.maxRadius, 6, 1); //lines get thinner as they expand
-        // strokeWeight(dynamicStroke);
-        // stroke(204, 223, 230, this.alpha); 
-        // ellipse(this.x, this.y, this.radius * 2);
-    
     }
 
     isFaded() {
-        return this.alpha <= 0 ;
+        return this.alpha <= 0;
     }
 }
 
@@ -202,19 +219,19 @@ class RippleRing {
         this.alpha = 255;
         this.growth = random(1.5, 3);
     }
-    
+
     expand() {
         this.radius += this.growth; // slower, finer expansion
         this.alpha -= 2; // fade out smoothly
     }
-    
+
     display() {
         noFill();
         strokeWeight(2);
         stroke(204, 223, 230, this.alpha);
         ellipse(this.x, this.y, this.radius * 2);
     }
-    
+
     isFaded() {
         return this.alpha <= 0;
     }
@@ -222,65 +239,110 @@ class RippleRing {
 
 class Fish {
     constructor() {
-      this.img = random(fishImages);
-      this.x = random(width);
-      this.y = random(height);
-      this.size = random(100, 210);
-      this.alpha = 0;
-      this.fadeSpeed = random(0.5, 1);
-      this.vx = random(-0.3, 0.3);
-      this.vy = random(-0.3, 0.3);
-      this.lifetime = int(random(200, 400));
-      this.age = 0;
+        this.img = random(fishImages);
+        this.x = random(width);
+        this.y = random(height);
+        this.size = random(100, 210);
+        this.alpha = 0;
+        this.fadeSpeed = random(0.5, 1);
+        this.lifetime = int(random(200, 400));
+        this.age = 0;
+        this.angle = random(TWO_PI);
+        let speed = random(0.3, 0.6);
+        this.vx = cos(this.angle) * speed;
+        this.vy = sin(this.angle) * speed;
     }
-  
+
     move() {
-      this.x += this.vx;
-      this.y += this.vy;
-      this.age++;
-  
-      // Fade in then out
-      if (this.age < this.lifetime / 2) {
-        this.alpha = min(this.alpha + this.fadeSpeed, 255);
-      } else {
-        this.alpha = max(this.alpha - this.fadeSpeed, 0);
-      }
+        this.x += this.vx;
+        this.y += this.vy;
+        this.age++;
+
+        // Fade in then out
+        if (this.age < this.lifetime / 2) {
+            this.alpha = min(this.alpha + this.fadeSpeed, 255);
+        } else {
+            this.alpha = max(this.alpha - this.fadeSpeed, 0);
+        }
+
+        for (let other of fishArray) {
+            if (other !== this) {
+                let d = dist(this.x, this.y, other.x, other.y);
+                let minDist = (this.size + other.size) / 2;
+                if (d < minDist) {
+                    // Push them away from each other
+                    let angle = atan2(this.y - other.y, this.x - other.x);
+                    this.vx += cos(angle) * 0.1;
+                    this.vy += sin(angle) * 0.1;
+                }
+            }
+        }
+
+        this.angle += random(-0.01, 0.01);
+        this.vx = cos(this.angle) * 0.5;
+        this.vy = sin(this.angle) * 0.5;
     }
-  
+
     display() {
-      tint(255, this.alpha);
-      image(this.img, this.x, this.y, this.size, this.size);
-      noTint();
+        push();
+        translate(this.x, this.y);
+        rotate(this.angle);
+        tint(255, this.alpha);
+        imageMode(CENTER);
+        image(this.img, 0, 0, this.size, this.size);
+        imageMode(CORNER); 
+        noTint();
+        pop();
     }
-  
+
     isDone() {
-      return this.alpha <= 0 && this.age >= this.lifetime;
+        return this.alpha <= 0 && this.age >= this.lifetime;
     }
 }
 
 class LilyPad {
     constructor() {
-      this.img = random(lilyImages);
-      this.x = random(width);
-      this.y = random(height);
-      this.size = random(150, 380);
-      this.vx = random(-0.2, 0.2);
-      this.vy = random(-0.2, 0.2);
+        this.img = random(lilyImages);
+        this.x = random(width);
+        this.y = random(height);
+        this.size = random(150, 380);
+        this.vx = random(-0.2, 0.2);
+        this.vy = random(-0.2, 0.2);
     }
-  
+
+    checkCollisions() {
+        for (let other of lilyPads) {
+            if (other !== this) {
+                let d = dist(this.x, this.y, other.x, other.y);
+                let minDist = (this.size + other.size) / 2;
+                if (d < minDist) {
+                    // Simple bounce: reverse direction
+                    let angle = atan2(this.y - other.y, this.x - other.x);
+                    let overlap = minDist - d;
+                    this.x += cos(angle) * (overlap / 2);
+                    this.y += sin(angle) * (overlap / 2);
+                    this.vx = cos(angle) * abs(this.vx);
+                    this.vy = sin(angle) * abs(this.vy);
+                }
+            }
+        }
+    }
+
     move() {
-      this.x += this.vx;
-      this.y += this.vy;
-  
-      // wrap around edges
-      if (this.x < -this.size) this.x = width;
-      if (this.x > width + this.size) this.x = 0;
-      if (this.y < -this.size) this.y = height;
-      if (this.y > height + this.size) this.y = 0;
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // wrap around edges
+        if (this.x < -this.size) this.x = width;
+        if (this.x > width + this.size) this.x = 0;
+        if (this.y < -this.size) this.y = height;
+        if (this.y > height + this.size) this.y = 0;
+
+        this.checkCollisions();
+
     }
-  
+
     display() {
-      image(this.img, this.x, this.y, this.size, this.size);
+        image(this.img, this.x, this.y, this.size, this.size);
     }
 }
-  

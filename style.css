@@ -1,3 +1,7 @@
+
+/*
+GLOWING ORB
+*/
 body {
     margin: 0;
     overflow: hidden;
@@ -43,4 +47,54 @@ body {
 
 .help-icon:hover .tooltip {
     visibility: visible;
+}
+
+
+/*
+START SCREEN
+*/
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(165, 228, 255, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    text-align: center;
+}
+
+#overlay-text {
+    background-color: white;
+    padding: 50px;
+    border-radius: 20px;
+    max-width: 800px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
+}
+
+#overlay-text p {
+    font-size: 1.8em;
+    font-weight: 500;
+    color: #0e5369;
+    margin-bottom: 30px;
+}
+
+#startButton {
+    background: linear-gradient(to right, #b3f2ff, #4d9dc1);
+    color: white;
+    font-size: 1.2em;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+#startButton:hover {
+    background: linear-gradient(to right, #4d9dc1, #3b7ea1);
+    transform: scale(1.05);
 }
