@@ -306,8 +306,25 @@ class LilyPad {
         this.x = random(width);
         this.y = random(height);
         this.size = random(150, 380);
-        this.vx = random(-0.2, 0.2);
-        this.vy = random(-0.2, 0.2);
+        this.vx = random(-0.6, 0.6);
+        this.vy = random(-0.6, 0.6);
+        this.alpha = 0;
+
+        //start off screen
+        const side = floor(random(4));
+        if (side === 0) {
+            this.x = -this.size;
+            this.y = random(height);
+        } else if (side === 1) {
+            this.x = width + this.size;
+            this.y = random(height);
+        } else if (side === 2) {
+            this.x = random(width);
+            this.y = -this.size;
+        } else {
+            this.x = random(width);
+            this.y = height + this.size;
+        }
     }
 
     checkCollisions() {
@@ -332,6 +349,11 @@ class LilyPad {
         this.x += this.vx;
         this.y += this.vy;
 
+        // fade in
+        if (this.alpha < 255) {
+            this.alpha += 1.5;
+        }
+          
         // wrap around edges
         if (this.x < -this.size) this.x = width;
         if (this.x > width + this.size) this.x = 0;
@@ -343,6 +365,11 @@ class LilyPad {
     }
 
     display() {
+        push();
+        tint(255, this.alpha);
         image(this.img, this.x, this.y, this.size, this.size);
+        noTint();
+        pop();
+
     }
 }
